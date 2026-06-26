@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { reconciliationService } from '../services/reconciliationService';
 import { useReconciliationProgress } from '../hooks/useReconciliationProgress';
-import { Link } from 'react-router-dom';
+import { ResultCharts } from '../components/ResultCharts'; // ← IMPORT DOS GRÁFICOS
 
 export const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -15,8 +16,7 @@ export const Dashboard: React.FC = () => {
 
   const { progress, result: progressResult, error: progressError, isComplete } = useReconciliationProgress(sessionId);
 
-  // Quando o resultado chegar via SSE, guardamos
-  React.useEffect(() => {
+  useEffect(() => {
     if (progressResult) {
       setResult(progressResult);
       setLoading(false);
@@ -61,7 +61,9 @@ export const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-8 max-w-6xl mx-auto"> {/* ← AUMENTEI max-w para 6xl para caber os gráficos */}
+      
+      {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <div className="flex items-center space-x-4">
@@ -75,6 +77,7 @@ export const Dashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* FORMULÁRIO DE UPLOAD */}
       <form onSubmit={handleUpload} className="space-y-4 bg-white p-6 rounded-lg shadow">
         <div>
           <label className="block text-sm font-medium text-gray-700">Planilha Financeiro</label>
@@ -106,7 +109,7 @@ export const Dashboard: React.FC = () => {
         {error && <p className="text-red-500">{error}</p>}
       </form>
 
-      {/* Barra de progresso */}
+      {/* BARRA DE PROGRESSO */}
       {loading && (
         <div className="mt-6 bg-white p-4 rounded-lg shadow">
           <div className="flex justify-between text-sm">
@@ -122,18 +125,20 @@ export const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Mensagem de Conclusão */}
+      {/* ✅ MENSAGEM DE CONCLUSÃO */}
       {isComplete && (
         <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700">
           ✅ Processamento finalizado! Clique em "Baixar Relatório" para obter o arquivo.
         </div>
       )}
 
-      {/* Resultado */}
+      {/* RESULTADO COM GRÁFICOS */}
       {result && (
         <div className="mt-8 bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-bold mb-4">Resultado da Comparação</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          
+          {/* Cards de estatísticas */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div className="p-4 bg-green-100 rounded-lg text-center">
               <div className="text-2xl font-bold">{result.totalConformes}</div>
               <div className="text-sm text-gray-600">Conformes</div>
@@ -150,10 +155,19 @@ export const Dashboard: React.FC = () => {
               <div className="text-2xl font-bold">{result.totalDivergencias}</div>
               <div className="text-sm text-gray-600">Divergências</div>
             </div>
+            <div className="p-4 bg-gray-100 rounded-lg text-center">
+              <div className="text-2xl font-bold">{result.totalCancelados}</div>
+              <div className="text-sm text-gray-600">Cancelados</div>
+            </div>
           </div>
+
+          {/* 🔽 GRÁFICOS INSERIDOS AQUI 🔽 */}
+          <ResultCharts data={result} />
+
+          {/* Botão de download */}
           <button
             onClick={downloadReport}
-            className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
           >
             📥 Baixar Relatório Excel
           </button>
