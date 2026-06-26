@@ -52,4 +52,19 @@ export const reconciliationService = {
     });
     return response.data;
   },
+  async reconciliarAsync(data: ReconciliationRequest): Promise<string> {
+    const formData = new FormData();
+    formData.append('fileFinanceiro', data.fileFinanceiro);
+    formData.append('fileCadastro', data.fileCadastro);
+    if (data.dataInicioMin) formData.append('dataInicioMin', data.dataInicioMin);
+    if (data.dataInicioMax) formData.append('dataInicioMax', data.dataInicioMax);
+    if (data.abasCadastro) {
+      data.abasCadastro.forEach(aba => formData.append('abasCadastro', aba));
+    }
+
+    const response = await api.post('/reconcile/async', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data; // retorna o sessionId
+  },
 };

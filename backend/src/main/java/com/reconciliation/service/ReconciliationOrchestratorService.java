@@ -41,6 +41,7 @@ public class ReconciliationOrchestratorService {
     private final RelatorioExcelService relatorioService;
     private final ReconciliationHistoryRepository historyRepository;
     private final UserRepository userRepository;
+    private ProgressService progressService;
 
     @Async("reconciliationExecutor")
     @Transactional
@@ -186,4 +187,81 @@ public class ReconciliationOrchestratorService {
 
         return dto;
     }
+
+        @Async("reconciliationExecutor")
+        public void processarAsync(MultipartFile fileFinanceiro,
+                                MultipartFile fileCadastro,
+                                LocalDate dataInicioMin,
+                                LocalDate dataInicioMax,
+                                List<String> abasCadastro,
+                                Long userId,
+                                String sessionId) {
+
+        ProgressService.ProgressEvent progress = new ProgressService.
+
+        ProgressEvent(0, "Iniciando...");
+        progressService.sendProgress(sessionId, 5, "Lendo planilha do financeiro...");
+
+                try {
+                        // 1. Ler financeiro
+                        List<RegistroPlanilha> financeiro = readerService.ler(fileFinanceiro);
+                        progressService.sendProgress(sessionId, 20, "Lendo planilha de cadastro...");
+
+                        // 2. Ler cadastro
+                        List<RegistroPlanilha> cadastro = readerService.ler(fileCadastro, abasCadastro);
+                        progressService.sendProgress(sessionId, 40, "Aplicando filtros...");
+
+                        // 3. Filtrar financeiro
+                        if (dataInicioMin != null) {
+                        financeiro = financeiro.stream()
+                                .filter(reg -> {
+                                        LocalDate inicio = reg.getDataInicio();
+                                        if (inicio == null) return false;
+                                        if (inicio.isBefore(dataInicioMin)) return false;
+                                        if (dataInicioMax != null && inicio.isAfter(dataInicioMax)) return false;
+                                        return true;
+                                })
+                                .collect(Collectors.toList());
+                        }
+                progressService.sendProgress(sessionId, 60, "Comparando dados...");
+
+                // 4. Comparar
+                ResultadoComparacao resultado = comparadorService.comparar(financeiro, cadastro);
+                progressService.sendProgress(sessionId, 80, "Gerando relatório Excel...");
+
+                // 5. Gerar relatório
+                byte[] relatorioBytes = relatorioService.gerar(
+                        resultado,
+                        fileFinanceiro.getOriginalFilename(),
+                        fileCadastro.getOriginalFilename(),
+                        financeiro.size(),
+                        cadastro.size()
+                );
+                progressService.sendProgress(sessionId, 90, "Salvando histórico...");
+
+                // 6. Salvar histórico e reportPath
+                User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+                ReconciliationHistory history = new ReconciliationHistory();
+                history.setUser(user);
+                history.setFilenameFinanceiro(fileFinanceiro.getOriginalFilename());
+                history.setFilenameCadastro(fileCadastro.getOriginalFilename());
+                // ... outros campos
+
+                String reportPath = salvarRelatorio(relatorioBytes, history.getId());
+                history.setReportPath(reportPath);
+                history = historyRepository.save(history);
+
+                progressService.sendProgress(sessionId, 100, "Concluído!");
+
+                // 7. Enviar resultado final
+                ReconciliationResultDTO dto = toDTO(resultado, financeiro.size(), cadastro.size(), history.getId(), reportPath);
+                progressService.sendComplete(sessionId, dto);
+
+                } catch (Exception e) {
+                        log.error("Erro na reconciliação assíncrona", e);
+                        progressService.sendError(sessionId, "Erro no processamento: " + e.getMessage());
+                }
+        }
 }
