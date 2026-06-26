@@ -22,7 +22,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -106,14 +110,23 @@ public class ReconciliationOrchestratorService {
     }
 
     private String salvarRelatorio(byte[] bytes, Long historyId) {
-        // Implementação: salvar em uma pasta configurada, retornar caminho.
-        // Exemplo:
-        // String dir = "uploads/reports/";
-        // String filename = "relatorio_" + historyId + ".xlsx";
-        // Files.write(Paths.get(dir + filename), bytes);
-        // return dir + filename;
-        return "reports/relatorio_" + historyId + ".xlsx";
-    }
+        String dir = System.getProperty("user.home") + "/planilha-reconciliation-reports/";
+        File directory = new File(dir);
+
+                if (!directory.exists()) directory.mkdirs();
+
+                String filename = "relatorio_" + historyId + ".xlsx";
+                Path path = Paths.get(dir, filename);
+                try {
+                        Files.write(path, bytes);
+                        return path.toString();
+
+                } catch (IOException e) {
+                        log.error("Erro ao salvar relatório", e);
+
+                        return null;
+                }
+        }
 
     private ReconciliationResultDTO toDTO(ResultadoComparacao resultado,
                                           int totalFin,
