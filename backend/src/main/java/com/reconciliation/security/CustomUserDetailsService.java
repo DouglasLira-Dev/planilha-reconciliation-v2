@@ -1,4 +1,4 @@
-package com.reconciliation.service;
+package com.reconciliation.security;
 
 import com.reconciliation.model.User;
 import com.reconciliation.repository.UserRepository;
