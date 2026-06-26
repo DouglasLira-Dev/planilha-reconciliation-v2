@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { reconciliationService } from '../services/reconciliationService';
 import { useReconciliationProgress } from '../hooks/useReconciliationProgress';
+import { Link } from 'react-router-dom';
 
 export const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -63,9 +64,14 @@ export const Dashboard: React.FC = () => {
     <div className="p-8 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <div>
-          <span className="mr-4">Olá, {user?.username}</span>
-          <button onClick={logout} className="text-red-500 hover:text-red-700">Sair</button>
+        <div className="flex items-center space-x-4">
+          <Link to="/history" className="text-blue-600 hover:text-blue-800">
+            📋 Histórico
+          </Link>
+          <span>Olá, {user?.username}</span>
+          <button onClick={logout} className="text-red-500 hover:text-red-700">
+            Sair
+          </button>
         </div>
       </div>
 

@@ -247,7 +247,16 @@ public class ReconciliationOrchestratorService {
                 history.setUser(user);
                 history.setFilenameFinanceiro(fileFinanceiro.getOriginalFilename());
                 history.setFilenameCadastro(fileCadastro.getOriginalFilename());
-                // ... outros campos
+                history.setTotalConformes(resultado.getTotalConformes());
+                history.setTotalFaltantesCadastro(resultado.getTotalFaltantes());
+                history.setTotalExcedentesCadastro(resultado.getTotalExcedentes());
+                history.setTotalDivergencias(resultado.getTotalDivergencias());
+                history.setTotalConflitosCpf(resultado.getTotalConflitos());
+                history.setTotalCancelados(resultado.getTotalCancelados());
+                history.setTotalAbreviacoes(resultado.getTotalPossiveisAbreviacoes());
+                history.setTotalErros(resultado.getTotalErros());
+                history.setTotalAvisos(resultado.getTotalAvisos());
+                
 
                 String reportPath = salvarRelatorio(relatorioBytes, history.getId());
                 history.setReportPath(reportPath);

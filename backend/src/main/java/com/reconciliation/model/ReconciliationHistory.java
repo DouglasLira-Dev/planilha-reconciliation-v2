@@ -58,4 +58,10 @@ public class ReconciliationHistory {
 
     @Column(name = "report_path", length = 500)
     private String reportPath;
+    
+    @Column(name = "total_erros")
+    private Integer totalErros = 0;
+
+    @Column(name = "total_avisos")
+    private Integer totalAvisos = 0;
 }
