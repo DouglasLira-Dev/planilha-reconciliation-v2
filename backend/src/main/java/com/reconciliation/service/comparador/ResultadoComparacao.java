@@ -14,6 +14,7 @@ import com.reconciliation.service.model.RegistroPlanilha;
 @NoArgsConstructor
 public class ResultadoComparacao {
 
+    @Data
     public static class PossivelAbreviatura {
         private RegistroPlanilha financeiro;
         private RegistroPlanilha cadastro;

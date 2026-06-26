@@ -1,12 +1,17 @@
 package com.reconciliation.service;
 
-import com.reconciliation.dto.*;
 import com.reconciliation.model.ReconciliationHistory;
 import com.reconciliation.model.User;
 import com.reconciliation.repository.ReconciliationHistoryRepository;
 import com.reconciliation.repository.UserRepository;
 import com.reconciliation.service.comparador.ComparadorPlanilhasService;
+import com.reconciliation.service.comparador.Divergencia;
+import com.reconciliation.service.comparador.ResultadoComparacao;
+import com.reconciliation.service.dto.DivergenciaDTO;
 import com.reconciliation.service.dto.ReconciliationResultDTO;
+import com.reconciliation.service.dto.RegistroSimplesDTO;
+import com.reconciliation.service.dto.PossivelAbreviaturaDTO;
+import com.reconciliation.service.model.RegistroPlanilha;
 import com.reconciliation.service.reader.PlanilhaReaderService;
 import com.reconciliation.service.relatorio.RelatorioExcelService;
 

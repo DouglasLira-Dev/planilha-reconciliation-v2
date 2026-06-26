@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.reconciliation.service.comparador.Divergencia;
 import com.reconciliation.service.comparador.ResultadoComparacao;
 import com.reconciliation.service.model.RegistroPlanilha;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
