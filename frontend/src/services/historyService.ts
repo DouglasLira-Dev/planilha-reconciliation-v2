@@ -58,5 +58,12 @@ export const historyService = {
 
   downloadReport(id: number): string {
     return `/api/report/${id}`;
+  },
+
+  async downloadReportBlob(id: number): Promise<Blob> {
+    const response = await api.get(`/report/${id}`, {
+      responseType: 'blob',
+    });
+    return response.data;
   }
 };

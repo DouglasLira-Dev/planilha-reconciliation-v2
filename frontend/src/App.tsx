@@ -6,6 +6,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { History } from './pages/History';
+import { HistoryDetail } from './pages/HistoryDetail';
 
 const queryClient = new QueryClient();
 
@@ -25,10 +26,15 @@ function App() {
               }
             />
             <Route path="/" element={<Navigate to="/dashboard" />} />
-
                       <Route path="/history"element={
               <ProtectedRoute>
                 <History />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/history/:id" element={
+              <ProtectedRoute>
+                <HistoryDetail />
               </ProtectedRoute>
             }
           />

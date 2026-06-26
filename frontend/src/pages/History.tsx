@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { historyService, HistoryListItem, HistoryFilters } from '../services/historyService';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Link } from 'react-router-dom';
 
 export const History: React.FC = () => {
   const { user } = useAuth();
@@ -151,6 +152,9 @@ export const History: React.FC = () => {
                       onClick={() => handleDownload(item.id)}
                       className="text-blue-600 hover:text-blue-900 mr-3"
                     >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800">
+                        <Link to={`/history/${item.id}`}>{item.id}</Link>
+                      </td>
                       📥
                     </button>
                     {isAdmin && (
